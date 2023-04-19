@@ -59,3 +59,13 @@ void Character::stopCharacterMovement()
 {
     world_pos = worldPosLastFrame;
 }
+
+Rectangle Character::getCollisionRectangle()
+{
+    return Rectangle{
+        screen_pos.x,
+        screen_pos.y,
+        width * scale,
+        height * scale
+    };
+}

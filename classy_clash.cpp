@@ -2,6 +2,8 @@
 #include "raymath.h"
 #include "character.h"
 #include "prop.h"
+#include "enemy.h"
+
 
 #define W_WIDTH 384
 #define W_HEIGHT 384
@@ -22,7 +24,16 @@ int main()
     const float map_scale{4.0f};
 
     Character knight{W_WIDTH,W_HEIGHT};
-    Prop rock{Vector2{0.f,0.f}, LoadTexture("resources/nature_tileset/Rock.png")};
+    Enemy enemy{
+        Vector2{}, 
+        LoadTexture("resources/characters/goblin_idle_spritesheet.png"), 
+        LoadTexture("resources/characters/goblin_run_spritesheet.png")
+    };
+
+    Prop props[2]{
+        Prop{Vector2{600.f,300.f}, LoadTexture("resources/nature_tileset/Rock.png")},
+        Prop{Vector2{400.f,500.f}, LoadTexture("resources/nature_tileset/Log.png")}
+    };
 
     while (!WindowShouldClose())
     {
@@ -32,7 +43,13 @@ int main()
         map_pos = Vector2Scale(knight.getWorldPos(), -1.f);
         // drawing the map
         DrawTextureEx(map, map_pos, 0.0, map_scale, WHITE);
-        rock.render(knight.getWorldPos());
+        
+        // Draw the props
+        for (auto prop : props)
+        {
+            prop.render(knight.getWorldPos());
+        }
+
         knight.tick(GetFrameTime());
 
         // checking map bounds 
@@ -44,6 +61,16 @@ int main()
         {
             knight.stopCharacterMovement();
         }
+        
+        for (auto prop : props)
+        {
+            if(CheckCollisionRecs(prop.getCollisionRectangle(knight.getWorldPos()), knight.getCollisionRectangle()))
+            {
+                knight.stopCharacterMovement();
+            }
+        }
+
+        enemy.tick(GetFrameTime());
 
         EndDrawing();
     }
