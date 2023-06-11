@@ -29,6 +29,7 @@ int main()
         LoadTexture("resources/characters/goblin_idle_spritesheet.png"), 
         LoadTexture("resources/characters/goblin_run_spritesheet.png")
     };
+    enemy.setTarget(&knight);
 
     Prop props[2]{
         Prop{Vector2{600.f,300.f}, LoadTexture("resources/nature_tileset/Rock.png")},
