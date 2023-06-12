@@ -19,7 +19,8 @@ Vector2 Character::getScreenPos()
 
 void Character::tick(float deltaTime)
 {
-    
+    if(!getIsAlive()) return; // if is not alive don't do anything for the character
+
     /* CHECK IF A KEY IS PRESSED FOR MOVEMENT*/
     if (IsKeyDown(KEY_A))
         velocity.x -= 1.0; // TO MOVE THE MAP X TO THE LEFT
@@ -47,7 +48,8 @@ void Character::tick(float deltaTime)
             weapon.width * scale,
             weapon.height * scale
         };
-        rotation = 30.f;    
+        rotation = 30.f;
+        rotation = IsMouseButtonDown(MOUSE_LEFT_BUTTON) ? rotation = 30.f : rotation = 0.f;
     }
     else
     {
@@ -59,18 +61,20 @@ void Character::tick(float deltaTime)
             weapon.width * scale,
             weapon.height * scale
         };   
-        rotation = -30.f;   
+        rotation = IsMouseButtonDown(MOUSE_LEFT_BUTTON) ? rotation = -30.f : rotation = 0.f;   
     }
 
     // Drawings the weapon
     Rectangle source{0.0, 0.0, static_cast<float>(weapon.width) * characterDirection, static_cast<float>(weapon.height)};
     Rectangle dest{getScreenPos().x + offset.x, getScreenPos().y + offset.y, weapon.width * scale, weapon.height * scale};
-    DrawTexturePro(weapon, source, dest, origin, rotation, WHITE);
-    DrawRectangleLines(
-        weaponCollisionRec.x,
-        weaponCollisionRec.y,
-        weaponCollisionRec.width,
-        weaponCollisionRec.height,
-        RED
-    );
+    DrawTexturePro(weapon, source, dest, origin, rotation, WHITE);    
+}
+
+void Character::takeDamage(float damage)
+{
+    health -= damage;
+    if(health <= 0.f)
+    {
+        setIsAlive(false);
+    }
 }

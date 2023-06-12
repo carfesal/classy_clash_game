@@ -12,6 +12,8 @@ class BaseCharacter
         void stopCharacterMovement();
         Rectangle getCollisionRectangle();
         virtual Vector2 getScreenPos() = 0;
+        bool getIsAlive() { return isAlive; }
+        void setIsAlive(bool is_alive) { isAlive = is_alive; }
     protected:
         Texture2D texture{LoadTexture("resources/characters/knight_idle_spritesheet.png")};
         Texture2D run{LoadTexture("resources/characters/knight_run_spritesheet.png")};
@@ -30,6 +32,8 @@ class BaseCharacter
         float height;
         float scale{4.0f};
         Vector2 velocity;
+    private:
+        bool isAlive{true};
 };
 
 #endif

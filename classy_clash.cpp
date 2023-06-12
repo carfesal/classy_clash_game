@@ -3,7 +3,7 @@
 #include "character.h"
 #include "prop.h"
 #include "enemy.h"
-
+#include <string>
 
 #define W_WIDTH 384
 #define W_HEIGHT 384
@@ -24,12 +24,24 @@ int main()
     const float map_scale{4.0f};
 
     Character knight{W_WIDTH,W_HEIGHT};
-    Enemy enemy{
-        Vector2{}, 
+    Enemy enemy1{
+        Vector2{800.f, 200.f}, 
         LoadTexture("resources/characters/goblin_idle_spritesheet.png"), 
         LoadTexture("resources/characters/goblin_run_spritesheet.png")
     };
-    enemy.setTarget(&knight);
+
+    Enemy enemy2{
+        Vector2{400.f, 200.f}, 
+        LoadTexture("resources/characters/slime_idle_spritesheet.png"), 
+        LoadTexture("resources/characters/slime_run_spritesheet.png")
+    };
+
+    Enemy* enemies[]{&enemy1, &enemy2};
+
+    for(auto enemy : enemies)
+    {
+        enemy->setTarget(&knight);
+    }
 
     Prop props[2]{
         Prop{Vector2{600.f,300.f}, LoadTexture("resources/nature_tileset/Rock.png")},
@@ -49,6 +61,19 @@ int main()
         for (auto prop : props)
         {
             prop.render(knight.getWorldPos());
+        }
+
+        if (!knight.getIsAlive())
+        {
+            DrawText("You died. GAME OVER", W_WIDTH / 2, W_HEIGHT / 2, 40, RED);
+            EndDrawing();
+            continue;
+        }
+        else
+        {
+            std::string remaniningKnightHealth = "Health: ";
+            remaniningKnightHealth.append(std::to_string(knight.getHealth()), 0, 5);
+            DrawText(remaniningKnightHealth.c_str(), 55.f, 45.f, 40, RED);
         }
 
         knight.tick(GetFrameTime());
@@ -71,7 +96,22 @@ int main()
             }
         }
 
-        enemy.tick(GetFrameTime());
+        for(auto enemy : enemies)
+        {
+            enemy->tick(GetFrameTime());
+        }
+        
+
+        if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+        {
+            for(auto enemy : enemies)
+            {
+                if(CheckCollisionRecs(enemy->getCollisionRectangle(), knight.getWeaponCollisionRec()))
+                {
+                    enemy->setIsAlive(false);
+                }
+            }
+        }
 
         EndDrawing();
     }
